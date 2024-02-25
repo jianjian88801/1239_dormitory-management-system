@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xunmaw.dormitory.dao.DormitoryManagerDao">
+
+    <resultMap type="com.xunmaw.dormitory.entity.DormitoryManager" id="DormitoryManagerMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="account" column="account" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="INTEGER"/>
+        <result property="score" column="score" jdbcType="INTEGER"/>
+        <result property="dManagerNum" column="d_manager_num" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="DormitoryManagerMap">
+        select
+          id, name, account, password, sex, score, d_manager_num, create_time, update_time, version, status
+        from dormitory_manager
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="DormitoryManagerMap">
+        select
+          id, name, account, password, sex, score, d_manager_num, create_time, update_time, version, status
+        from dormitory_manager
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="account != null and account != ''">
+                and account = #{account}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="score != null">
+                and score = #{score}
+            </if>
+            <if test="dManagerNum != null and dManagerNum != ''">
+                and d_manager_num = #{dManagerNum}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="version != null">
+                and version = #{version}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from dormitory_manager
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="account != null and account != ''">
+                and account = #{account}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="score != null">
+                and score = #{score}
+            </if>
+            <if test="dManagerNum != null and dManagerNum != ''">
+                and d_manager_num = #{dManagerNum}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="version != null">
+                and version = #{version}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+    <select id="queryByAccount"  resultMap="DormitoryManagerMap">
+        select
+            id, name, account, password, sex, score, d_manager_num, create_time, update_time, version, status
+        from dormitory_manager
+        where account = #{account}
+    </select>
+    <select id="queryByPwdAccount" resultMap="DormitoryManagerMap">
+        select
+            id, name, account, password, sex, score, d_manager_num, create_time, update_time, version, status
+        from dormitory_manager
+        where account = #{account} and password = #{password}
+    </select>
+
+    <select id="queryAll" resultMap="DormitoryManagerMap">
+        select
+            id, name, account, password, sex, score, d_manager_num, create_time, update_time, version, status
+        from dormitory_manager
+    </select>
+    <select id="queryAllByAccount" resultMap="DormitoryManagerMap">
+        select
+            id, name, account, password, sex, score, d_manager_num, create_time, update_time, version, status
+        from dormitory_manager where account LIKE "%"#{account}"%"
+    </select>
+    <select id="queryAllByName" resultMap="DormitoryManagerMap">
+        select
+            id, name, account, password, sex, score, d_manager_num, create_time, update_time, version, status
+        from dormitory_manager where name LIKE "%"#{name}"%"
+    </select>
+    <select id="queryAllByNumber" resultMap="DormitoryManagerMap">
+        select
+            id, name, account, password, sex, score, d_manager_num, create_time, update_time, version, status
+        from dormitory_manager
+        where d_manager_num = #{number}
+    </select>
+    <select id="queryAllByStatus" resultType="java.lang.Integer">
+        select count(*)
+        from dormitory_manager
+        where status = 1
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into dormitory_manager(name, account, password, sex, score, d_manager_num, create_time, update_time, version, status)
+        values (#{name}, #{account}, #{password}, #{sex}, #{score}, #{dManagerNum}, #{createTime}, #{updateTime}, #{version}, #{status})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into dormitory_manager(name, account, password, sex, score, d_manager_num, create_time, update_time, version, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.name}, #{entity.account}, #{entity.password}, #{entity.sex}, #{entity.score}, #{entity.dManagerNum}, #{entity.createTime}, #{entity.updateTime}, #{entity.version}, #{entity.status})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into dormitory_manager(name, account, password, sex, score, d_manager_num, create_time, update_time, version, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.account}, #{entity.password}, #{entity.sex}, #{entity.score}, #{entity.dManagerNum}, #{entity.createTime}, #{entity.updateTime}, #{entity.version}, #{entity.status})
+        </foreach>
+        on duplicate key update
+        name = values(name),
+        account = values(account),
+        password = values(password),
+        sex = values(sex),
+        score = values(score),
+        d_manager_num = values(d_manager_num),
+        create_time = values(create_time),
+        update_time = values(update_time),
+        version = values(version),
+        status = values(status)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update dormitory_manager
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="account != null and account != ''">
+                account = #{account},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="score != null">
+                score = #{score},
+            </if>
+            <if test="dManagerNum != null and dManagerNum != ''">
+                d_manager_num = #{dManagerNum},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="version != null">
+                version = #{version},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from dormitory_manager where id = #{id}
+    </delete>
+
+</mapper>
+

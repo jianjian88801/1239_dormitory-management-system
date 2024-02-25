@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xunmaw.dormitory.dao.DormitoryDao">
+
+    <resultMap type="com.xunmaw.dormitory.entity.Dormitory" id="DormitoryMap">
+        <result property="dId" column="d_id" jdbcType="INTEGER"/>
+        <result property="buId" column="bu_id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="floor" column="floor" jdbcType="INTEGER"/>
+        <result property="livedNumber" column="lived_number" jdbcType="INTEGER"/>
+        <result property="maxNumber" column="max_number" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="DormitoryMap">
+        select
+          d_id, bu_id, name, floor, lived_number, max_number, create_time, update_time, version, status
+        from dormitory
+        where d_id = #{dId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="DormitoryMap">
+        select
+          d_id, bu_id, name, floor, lived_number, max_number, create_time, update_time, version, status
+        from dormitory
+        <where>
+            <if test="dId != null">
+                and d_id = #{dId}
+            </if>
+            <if test="buId != null">
+                and bu_id = #{buId}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="floor != null">
+                and floor = #{floor}
+            </if>
+            <if test="livedNumber != null">
+                and lived_number = #{livedNumber}
+            </if>
+            <if test="maxNumber != null">
+                and max_number = #{maxNumber}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="version != null">
+                and version = #{version}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from dormitory
+        <where>
+            <if test="dId != null">
+                and d_id = #{dId}
+            </if>
+            <if test="buId != null">
+                and bu_id = #{buId}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="floor != null">
+                and floor = #{floor}
+            </if>
+            <if test="livedNumber != null">
+                and lived_number = #{livedNumber}
+            </if>
+            <if test="maxNumber != null">
+                and max_number = #{maxNumber}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="version != null">
+                and version = #{version}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+    <select id="queryAllByName" resultMap="DormitoryMap">
+        select
+            d_id, bu_id, name, floor, lived_number, max_number, create_time, update_time, version, status
+        from dormitory
+        where  name LIKE "%"#{name}"%"
+    </select>
+    <select id="queryAll" resultMap="DormitoryMap">
+        select
+            d_id, bu_id, name, floor, lived_number, max_number, create_time, update_time, version, status
+        from dormitory
+    </select>
+    <select id="queryByName"  resultMap="DormitoryMap">
+        select
+            d_id, bu_id, name, floor, lived_number, max_number, create_time, update_time, version, status
+        from dormitory where  name = #{name}
+    </select>
+    <select id="queryByLiveNumberSmallMaxNumber" resultMap="DormitoryMap">
+        select
+            d_id, bu_id, name, floor, lived_number, max_number, create_time, update_time, version, status
+        from dormitory where  lived_number &lt; max_number
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="dId" useGeneratedKeys="true">
+        insert into dormitory(bu_id, name, floor, lived_number, max_number, create_time, update_time, version, status)
+        values (#{buId}, #{name}, #{floor}, #{livedNumber}, #{maxNumber}, #{createTime}, #{updateTime}, #{version}, #{status})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="dId" useGeneratedKeys="true">
+        insert into dormitory(bu_id, name, floor, lived_number, max_number, create_time, update_time, version, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.buId}, #{entity.name}, #{entity.floor}, #{entity.livedNumber}, #{entity.maxNumber}, #{entity.createTime}, #{entity.updateTime}, #{entity.version}, #{entity.status})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="dId" useGeneratedKeys="true">
+        insert into dormitory(bu_id, name, floor, lived_number, max_number, create_time, update_time, version, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.buId}, #{entity.name}, #{entity.floor}, #{entity.livedNumber}, #{entity.maxNumber}, #{entity.createTime}, #{entity.updateTime}, #{entity.version}, #{entity.status})
+        </foreach>
+        on duplicate key update
+        bu_id = values(bu_id),
+        name = values(name),
+        floor = values(floor),
+        lived_number = values(lived_number),
+        max_number = values(max_number),
+        create_time = values(create_time),
+        update_time = values(update_time),
+        version = values(version),
+        status = values(status)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update dormitory
+        <set>
+            <if test="buId != null">
+                bu_id = #{buId},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="floor != null">
+                floor = #{floor},
+            </if>
+            <if test="livedNumber != null">
+                lived_number = #{livedNumber},
+            </if>
+            <if test="maxNumber != null">
+                max_number = #{maxNumber},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="version != null">
+                version = #{version},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where d_id = #{dId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from dormitory where d_id = #{dId}
+    </delete>
+
+</mapper>
+

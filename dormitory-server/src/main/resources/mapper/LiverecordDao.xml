@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xunmaw.dormitory.dao.LiverecordDao">
+
+    <resultMap type="com.xunmaw.dormitory.entity.Liverecord" id="LiverecordMap">
+        <result property="lId" column="l_id" jdbcType="INTEGER"/>
+        <result property="liveDate" column="live_date" jdbcType="TIMESTAMP"/>
+        <result property="dId" column="d_id" jdbcType="INTEGER"/>
+        <result property="sId" column="s_id" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="queryAllEntity" resultMap="LiverecordMap">
+        select
+            l_id, live_date, d_id, s_id, create_time, update_time, version, status
+        from liverecord where  status = 1
+    </select>
+    <!--查询单个-->
+    <select id="queryById" resultMap="LiverecordMap">
+        select
+          l_id, live_date, d_id, s_id, create_time, update_time, version, status
+        from liverecord
+        where l_id = #{lId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="LiverecordMap">
+        select
+          l_id, live_date, d_id, s_id, create_time, update_time, version, status
+        from liverecord
+        <where>
+            <if test="lId != null">
+                and l_id = #{lId}
+            </if>
+            <if test="liveDate != null">
+                and live_date = #{liveDate}
+            </if>
+            <if test="dId != null">
+                and d_id = #{dId}
+            </if>
+            <if test="sId != null">
+                and s_id = #{sId}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="version != null">
+                and version = #{version}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from liverecord
+        <where>
+            <if test="lId != null">
+                and l_id = #{lId}
+            </if>
+            <if test="liveDate != null">
+                and live_date = #{liveDate}
+            </if>
+            <if test="dId != null">
+                and d_id = #{dId}
+            </if>
+            <if test="sId != null">
+                and s_id = #{sId}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="version != null">
+                and version = #{version}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <resultMap type="com.xunmaw.dormitory.sql.LiveRecordSql" id="liveMap">
+        <!--column指向数据库列名 property指向pojo对象中字段名 -->
+        <result property="lId" column="l_id"  />
+        <result property="liveDate" column="live_date" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time"/>
+        <result property="version" column="version" />
+        <result property="status" column="status" />
+        <association property="dormitory" javaType="com.xunmaw.dormitory.entity.Dormitory">
+            <result property="dId" column="d_id" jdbcType="INTEGER"/>
+            <result property="buId" column="bu_id" jdbcType="INTEGER"/>
+            <result property="name" column="dormitoryname" jdbcType="VARCHAR"/>
+            <result property="floor" column="floor" jdbcType="INTEGER"/>
+            <result property="livedNumber" column="lived_number" jdbcType="INTEGER"/>
+            <result property="maxNumber" column="max_number" jdbcType="INTEGER"/>
+            <result property="createTime" column="dctime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="duptime" jdbcType="TIMESTAMP"/>
+            <result property="version" column="dversion" jdbcType="INTEGER"/>
+            <result property="status" column="dstatus" jdbcType="INTEGER"/>
+        </association>
+        <!-- 一对一的关系映射：配置封装Entity2的内容-->
+        <association property="student" javaType="com.xunmaw.dormitory.entity.Student">
+            <result property="sId" column="s_id" jdbcType="INTEGER"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="account" column="account" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="sNumber" column="s_number" jdbcType="VARCHAR"/>
+            <result property="sex" column="sex" jdbcType="INTEGER"/>
+            <result property="createTime" column="scrtime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="suptime" jdbcType="TIMESTAMP"/>
+            <result property="version" column="sversion" jdbcType="INTEGER"/>
+            <result property="status" column="sstatus" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+    <select id="queryAllByName" resultMap="liveMap" parameterType="java.lang.String">
+        select
+            liverecord.l_id, liverecord.live_date,liverecord.create_time, liverecord.update_time,
+               liverecord.version, liverecord.status,dormitory.d_id, dormitory.bu_id, dormitory.name as dormitoryname,
+               dormitory.floor, dormitory.lived_number, dormitory.max_number, dormitory.create_time as dctime,
+               dormitory.update_time as duptime, dormitory.version as dversion, dormitory.status as dstatus,student.s_id,
+               student.name, student.account, student.password, student.s_number, student.sex,
+               student.create_time as scrtime, student.update_time as suptime, student.version as sversion,
+               student.status as sstatus
+        from liverecord,dormitory,student where liverecord.s_id = student.s_id
+                                            and liverecord.d_id = dormitory.d_id and dormitory.name like "%"#{name}"%"
+    </select>
+    <select id="queryAll" resultMap="liveMap">
+            select   liverecord.l_id, liverecord.live_date,liverecord.create_time, liverecord.update_time,
+    liverecord.version, liverecord.status,dormitory.d_id, dormitory.bu_id, dormitory.name as dormitoryname,
+    dormitory.floor, dormitory.lived_number, dormitory.max_number, dormitory.create_time as dctime,
+    dormitory.update_time as duptime, dormitory.version as dversion, dormitory.status as dstatus,student.s_id,
+    student.name, student.account, student.password, student.s_number, student.sex,
+    student.create_time as scrtime, student.update_time as suptime, student.version as sversion,
+    student.status as sstatus
+    from liverecord,dormitory,student where liverecord.s_id = student.s_id
+    and liverecord.d_id = dormitory.d_id
+    </select>
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="lId" useGeneratedKeys="true">
+        insert into liverecord(live_date, d_id, s_id, create_time, update_time, version, status)
+        values (#{liveDate}, #{dId}, #{sId}, #{createTime}, #{updateTime}, #{version}, #{status})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="lId" useGeneratedKeys="true">
+        insert into liverecord(live_date, d_id, s_id, create_time, update_time, version, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.liveDate}, #{entity.dId}, #{entity.sId}, #{entity.createTime}, #{entity.updateTime}, #{entity.version}, #{entity.status})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="lId" useGeneratedKeys="true">
+        insert into liverecord(live_date, d_id, s_id, create_time, update_time, version, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.liveDate}, #{entity.dId}, #{entity.sId}, #{entity.createTime}, #{entity.updateTime}, #{entity.version}, #{entity.status})
+        </foreach>
+        on duplicate key update
+        live_date = values(live_date),
+        d_id = values(d_id),
+        s_id = values(s_id),
+        create_time = values(create_time),
+        update_time = values(update_time),
+        version = values(version),
+        status = values(status)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update liverecord
+        <set>
+            <if test="liveDate != null">
+                live_date = #{liveDate},
+            </if>
+            <if test="dId != null">
+                d_id = #{dId},
+            </if>
+            <if test="sId != null">
+                s_id = #{sId},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="version != null">
+                version = #{version},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where l_id = #{lId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from liverecord where l_id = #{lId}
+    </delete>
+
+</mapper>
+

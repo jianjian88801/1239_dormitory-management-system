@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xunmaw.dormitory.dao.AdminDao">
+
+    <resultMap type="com.xunmaw.dormitory.entity.Admin" id="AdminMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="account" column="account" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="AdminMap">
+        select
+          id, account, password, create_time, update_time, version, status
+        from admin
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="AdminMap">
+        select
+          id, account, password, create_time, update_time, version, status
+        from admin
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="account != null and account != ''">
+                and account = #{account}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="version != null">
+                and version = #{version}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from admin
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="account != null and account != ''">
+                and account = #{account}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="version != null">
+                and version = #{version}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+    <select id="queryByAccount" resultMap="AdminMap" parameterType="java.lang.String">
+        select id, account, password, create_time, update_time, version, status from admin where account = #{account}
+    </select>
+    <select id="queryByPwdAccount" resultMap="AdminMap" parameterType="java.lang.String">
+        select id, account, password, create_time, update_time, version, status from admin where account = #{account} and password = #{password}
+    </select>
+
+    <select id="queryAll" resultMap="AdminMap">
+        select id, account, password, create_time, update_time, version, status from admin
+    </select>
+    <select id="queryAllByAccount" resultMap="AdminMap">
+        select id, account, password, create_time, update_time, version, status from admin where account LIKE "%"#{account}"%"
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into admin(account, password, create_time, update_time, version, status)
+        values (#{account}, #{password}, #{createTime}, #{updateTime}, #{version}, #{status})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into admin(account, password, create_time, update_time, version, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.account}, #{entity.password}, #{entity.createTime}, #{entity.updateTime}, #{entity.version}, #{entity.status})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into admin(account, password, create_time, update_time, version, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.account}, #{entity.password}, #{entity.createTime}, #{entity.updateTime}, #{entity.version}, #{entity.status})
+        </foreach>
+        on duplicate key update
+        account = values(account),
+        password = values(password),
+        create_time = values(create_time),
+        update_time = values(update_time),
+        version = values(version),
+        status = values(status)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update admin
+        <set>
+            <if test="account != null and account != ''">
+                account = #{account},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="version != null">
+                version = #{version},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from admin where id = #{id}
+    </delete>
+
+
+</mapper>
+

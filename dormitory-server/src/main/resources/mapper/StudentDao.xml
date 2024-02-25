@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xunmaw.dormitory.dao.StudentDao">
+
+    <resultMap type="com.xunmaw.dormitory.entity.Student" id="StudentMap">
+        <result property="sId" column="s_id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="account" column="account" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="sNumber" column="s_number" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="StudentMap">
+        select
+          s_id, name, account, password, s_number, sex, create_time, update_time, version, status
+        from student
+        where s_id = #{sId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="StudentMap">
+        select
+          s_id, name, account, password, s_number, sex, create_time, update_time, version, status
+        from student
+        <where>
+            <if test="sId != null">
+                and s_id = #{sId}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="account != null and account != ''">
+                and account = #{account}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="sNumber != null and sNumber != ''">
+                and s_number = #{sNumber}
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="version != null">
+                and version = #{version}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from student
+        <where>
+            <if test="sId != null">
+                and s_id = #{sId}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="account != null and account != ''">
+                and account = #{account}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="sNumber != null and sNumber != ''">
+                and s_number = #{sNumber}
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="version != null">
+                and version = #{version}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+    <select id="queryByAccount" resultMap="StudentMap">
+        select
+            s_id, name, account, password, s_number, sex, create_time, update_time, version, status
+        from student
+        where account = #{account}
+    </select>
+    <select id="queryByPwdAccount" resultMap="StudentMap">
+        select
+            s_id, name, account, password, s_number, sex, create_time, update_time, version, status
+        from student
+        where account = #{account} and password =  #{password}
+    </select>
+
+    <select id="queryAllByAccount" resultMap="StudentMap">
+        select s_id, name, account, password, s_number, sex, create_time, update_time, version, status
+        from student where account LIKE "%"#{account}"%"
+    </select>
+
+    <select id="queryAllByName" resultMap="StudentMap">
+        select s_id, name, account, password, s_number, sex, create_time, update_time, version, status
+        from student where name LIKE "%"#{name}"%"
+    </select>
+
+    <select id="queryAll" resultMap="StudentMap">
+        select
+            s_id, name, account, password, s_number, sex, create_time, update_time, version, status
+        from student
+    </select>
+    <select id="queryAllByNumber" resultMap="StudentMap">
+        select
+            s_id, name, account, password, s_number, sex, create_time, update_time, version, status
+        from student where s_number = #{number}
+    </select>
+    <select id="queryAllCount" resultType="java.lang.Integer">
+        select COUNT(*)
+        from student where status = 1
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="sId" useGeneratedKeys="true">
+        insert into student(name, account, password, s_number, sex, create_time, update_time, version, status)
+        values (#{name}, #{account}, #{password}, #{sNumber}, #{sex}, #{createTime}, #{updateTime}, #{version}, #{status})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="sId" useGeneratedKeys="true">
+        insert into student(name, account, password, s_number, sex, create_time, update_time, version, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.name}, #{entity.account}, #{entity.password}, #{entity.sNumber}, #{entity.sex}, #{entity.createTime}, #{entity.updateTime}, #{entity.version}, #{entity.status})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="sId" useGeneratedKeys="true">
+        insert into student(name, account, password, s_number, sex, create_time, update_time, version, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.account}, #{entity.password}, #{entity.sNumber}, #{entity.sex}, #{entity.createTime}, #{entity.updateTime}, #{entity.version}, #{entity.status})
+        </foreach>
+        on duplicate key update
+        name = values(name),
+        account = values(account),
+        password = values(password),
+        s_number = values(s_number),
+        sex = values(sex),
+        create_time = values(create_time),
+        update_time = values(update_time),
+        version = values(version),
+        status = values(status)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update student
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="account != null and account != ''">
+                account = #{account},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="sNumber != null and sNumber != ''">
+                s_number = #{sNumber},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="version != null">
+                version = #{version},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where s_id = #{sId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from student where s_id = #{sId}
+    </delete>
+
+</mapper>
+

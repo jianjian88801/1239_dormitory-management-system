@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xunmaw.dormitory.dao.RepairrecordDao">
+
+    <resultMap type="com.xunmaw.dormitory.entity.Repairrecord" id="RepairrecordMap">
+        <result property="rId" column="r_id" jdbcType="INTEGER"/>
+        <result property="sId" column="s_id" jdbcType="INTEGER"/>
+        <result property="date" column="date" jdbcType="TIMESTAMP"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="dMId" column="d_m_id" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="handleTime" column="handle_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="RepairrecordMap">
+        select r_id,
+               s_id, date, title, d_m_id, create_time, update_time, version, status, handle_time
+        from repairrecord
+        where r_id = #{rId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="RepairrecordMap">
+        select
+        r_id, s_id, date, title, d_m_id, create_time, update_time, version, status, handle_time
+        from repairrecord
+        <where>
+            <if test="rId != null">
+                and r_id = #{rId}
+            </if>
+            <if test="sId != null">
+                and s_id = #{sId}
+            </if>
+            <if test="date != null">
+                and date = #{date}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="dMId != null">
+                and d_m_id = #{dMId}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="version != null">
+                and version = #{version}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="handleTime != null">
+                and handle_time = #{handleTime}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from repairrecord
+        <where>
+            <if test="rId != null">
+                and r_id = #{rId}
+            </if>
+            <if test="sId != null">
+                and s_id = #{sId}
+            </if>
+            <if test="date != null">
+                and date = #{date}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="dMId != null">
+                and d_m_id = #{dMId}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="version != null">
+                and version = #{version}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="handleTime != null">
+                and handle_time = #{handleTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryAll" resultMap="RepairrecordMap">
+        select r_id,
+               s_id, date, title, d_m_id, create_time, update_time, version, status, handle_time
+        from repairrecord
+    </select>
+    <select id="queryByTitle" resultMap="RepairrecordMap">
+        select r_id,
+               s_id, date, title, d_m_id, create_time, update_time, version, status, handle_time
+        from repairrecord
+        where title = #{title}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="rId" useGeneratedKeys="true">
+        insert into repairrecord(s_id, date, title, d_m_id, create_time, update_time, version, status, handle_time)
+        values (#{sId}, #{date}, #{title}, #{dMId}, #{createTime}, #{updateTime}, #{version}, #{status}, #{handleTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="rId" useGeneratedKeys="true">
+        insert into repairrecord(s_id, date, title, d_m_id, create_time, update_time, version, status, handle_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.sId}, #{entity.date}, #{entity.title}, #{entity.dMId}, #{entity.createTime}, #{entity.updateTime},
+            #{entity.version}, #{entity.status}, #{entity.handleTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="rId" useGeneratedKeys="true">
+        insert into repairrecord(s_id, date, title, d_m_id, create_time, update_time, version, status, handle_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.sId}, #{entity.date}, #{entity.title}, #{entity.dMId}, #{entity.createTime}, #{entity.updateTime},
+            #{entity.version}, #{entity.status}, #{entity.handleTime})
+        </foreach>
+        on duplicate key update
+        s_id = values(s_id),
+        date = values(date),
+        title = values(title),
+        d_m_id = values(d_m_id),
+        create_time = values(create_time),
+        update_time = values(update_time),
+        version = values(version),
+        status = values(status),
+        handle_time = values(handle_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update repairrecord
+        <set>
+            <if test="sId != null">
+                s_id = #{sId},
+            </if>
+            <if test="date != null">
+                date = #{date},
+            </if>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="dMId != null">
+                d_m_id = #{dMId},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="version != null">
+                version = #{version},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="handleTime != null">
+                handle_time = #{handleTime},
+            </if>
+        </set>
+        where r_id = #{rId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from repairrecord
+        where r_id = #{rId}
+    </delete>
+
+</mapper>
+
