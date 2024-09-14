@@ -1,6 +1,5 @@
 # 学生宿舍管理系统
 
-##  联系不到我，就看我的主页 
  
 #### 介绍
 本系统是基于Java实现的学生宿舍管理系统，前端：Vue；后端：SpringBoot + Mybatis + Redis +Mysql；系统环境：jdk1.8 | mysql | redis | nodejs14+。有包含登录在内的十大功能模块，三个访问角色，满足基本的宿舍管理需求，
